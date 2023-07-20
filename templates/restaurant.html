@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Restaurant</title>
+</head>
+<body>
+	<h1> Welcome to my restaurant </h1>
+
+        <form method = "POST" action = "{{url_for('pay')}}">
+		<label for = "date"> Date: <br> </label>
+                <input type = "text" name = "date" id = "date" style="left: 200px;">
+		<label for = "consumer"> <br>Consumer:<br> </label>
+                <input type = "text" name = "consumer" id = "consumer" style="width: 450px;">
+		<label for="amount"><br> Amount: <br></label>
+                <input type = "text" name = "amount" id = "amount">
+		<label for="category"> <br><br> Category: <br></label>
+                <select id = "categoryopt" onchange="sendCategorySelection()">
+                    <option>-Please select-</option>
+                    <option> Meal </option>
+                    <option> Travel </option>
+                    <option> Purchase </option>
+                    <option> Medical </option>
+                    <option> Lease </option>
+                    <option> Transport </option>
+                    <option> Other </option>
+                </select>
+		<label for = "company"> <br><br> Company: <br></label>
+                <input type = "text" name = "company" id = "company" style="width: 450px;">
+		<label for="dep"><br><br> Department: <br> </label>
+                <select id = "depopt" onchange="sendDepartmentSelection()">
+                        <option value = 0>-Please select-</option>
+                        <option value = 1> Human resource </option>
+                        <option value = 2> Administrative </option>
+                        <option value = 3> Market </option>
+                        <option value = 4> Research and development </option>
+                        <option value = 5> CEO office </option>
+                        <option value = 6> Other </option>
+                </select>
+		<label for="approver"><br><br> First approver: <br></label>
+                <input type= "text" name = "approver" id = "approver" style="width: 450px;">
+		<br><br>
+                <button type = "submit" style="width: 160px;"> Pay </button> 
+        </form>
+
+        <script>
+            function sendCategorySelection() {
+                var selectedIndex = document.getElementById("categoryopt").selectedIndex;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/select_category", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // process server response 
+                    }
+                };
+                xhr.send("index=" + selectedIndex);
+            }
+
+            function sendDepartmentSelection() {
+                var selectedIndex = document.getElementById("depopt").selectedIndex;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/select_department", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // process server response
+                    }
+                };
+                xhr.send("index=" + selectedIndex);
+            }
+        </script>
+
+    {% if error %}
+	<h1> {{error}} </h1>
+    {% else %}
+    {% endif %}
+
+    {% if welcome %}
+	<h1> {{welcome}}</h1>
+    {% else %}
+    {% endif %}
+
+    {% if plain_token %}
+        <p> You have the login token: {{plain_token}}</p>
+    {% else %}
+    {% endif %}
+
+    {% if cert %}
+        <h1> You can use the following certificate to log in server now. </h1>
+        <p> {{cert}}</p>
+    {% else %}
+    {% endif %}
+
+    {% if token1 %}
+        <h1> Your new tokens have been saved, so you have 2 new IDs. </h1>
+	<p> {{token1}} </p>
+	<p> {{token2}} </p>
+    {% else %}
+    {% endif %}
+
+</body>
+</html>
