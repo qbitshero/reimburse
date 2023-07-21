@@ -75,26 +75,9 @@
     {% else %}
     {% endif %}
 
-    {% if welcome %}
-	<h1> {{welcome}}</h1>
-    {% else %}
-    {% endif %}
-
-    {% if plain_token %}
-        <p> You have the login token: {{plain_token}}</p>
-    {% else %}
-    {% endif %}
-
-    {% if cert %}
-        <h1> You can use the following certificate to log in server now. </h1>
-        <p> {{cert}}</p>
-    {% else %}
-    {% endif %}
-
-    {% if token1 %}
-        <h1> Your new tokens have been saved, so you have 2 new IDs. </h1>
-	<p> {{token1}} </p>
-	<p> {{token2}} </p>
+    {% if receipt %}
+        <h1> You can use the following receipt to reimburse now. </h1>
+        <p> {{receipt}}</p>
     {% else %}
     {% endif %}
 
