@@ -17,6 +17,9 @@ approver1_view_key = ''
 approver2_address = ''
 approver2_private_key = ''
 approver2_view_key = ''
+consumer_address = ''
+consumer_private_key = ''
+consumer_view_key = ''
 
 fee_record_list = []
 token_list = []
@@ -24,6 +27,7 @@ token_list = []
 def load_config():
     global approver1_address, approver1_private_key, approver1_view_key
     global approver2_address, approver2_private_key, approver2_view_key
+    global consumer_address, consumer_private_key, consumer_view_key
     global fee_record_list, token_list
 
     fd = open("reimburse.conf", "r+")
@@ -33,6 +37,10 @@ def load_config():
     approver2_address = fd.readline().strip()
     approver2_private_key = fd.readline().strip()
     approver2_view_key = fd.readline().strip()
+
+    consumer_address = fd.readline().strip()
+    consumer_private_key = fd.readline().strip()
+    consumer_view_key = fd.readline().strip()
 
     records = fd.read().strip()
     end = records.find('\"', 1)
@@ -65,6 +73,10 @@ def load_config():
     logging.info(fee_record_list[1])
     logging.info(token_list[-1])
 
+    logging.info(consumer_address)
+    logging.info(consumer_private_key)
+    logging.info(consumer_view_key)
+
 def save_config():
     fd = open("reimburse.conf", "w+")
     fd.write(approver1_address.strip())
@@ -79,9 +91,17 @@ def save_config():
     fd.write('\n')
     fd.write(approver2_view_key.strip())
     fd.write('\n')
+    fd.write(consumer_address.strip())
+    fd.write('\n')
+    fd.write(consumer_private_key.strip())
+    fd.write('\n')
+    fd.write(consumer_view_key.strip())
+    fd.write('\n')
 
     fd.write(fee_record_list[0])
+    fd.write('\n')
     fd.write(fee_record_list[1])
+    fd.write('\n')
     fd.write(token_list[-1])
 
     fd.close()
@@ -141,16 +161,6 @@ def decrypt_record(cipher, view_key):
 def home():
     return render_template('reimburse.html')
 
-@app.route("/first_approve")
-def first_approve():
-    logging.info("@first_approve")
-    return render_template('reimburse.html')
-
-@app.route("/second_approve")
-def second_approve():
-    logging.info("@second_approve")
-    return render_template('reimburse.html')
-
 @app.route('/decrypt_receipt', methods=['POST'])
 def decrypt_receipt():
     global approver1_view_key, approver2_view_key
@@ -165,57 +175,27 @@ def decrypt_receipt():
 
     record = decrypt_record(cipher, view_key)
 
-    if record ==  "Error":
+    if record == "Error":
         logging.error("Failed to dectypt receipt.")
 
     logging.info("plain receipt: %s" % record);
     return jsonify({"receipt": record})
 
-@app.route('/approve', methods=['POST'])
-def approve():
-    receipt = request.form.get('receipt')
-    approver = request.form.get('approver')
-    logging.info("@approve receipt = %s, approver = %s" % (receipt, approver))
-    return jsonify({"receipt" : "=================="})
-
-@app.route('/reject', methods=['POST'])
-def reject():
-    receipt = request.form.get('receipt')
-    approver = request.form.get('approver')
-    logging.info("@reject receipt = %s, approver = %s" % (receipt, approver))
-    return jsonify({"reject" : "=================="})
-
-# user signs up with aleo account, and gets an login token
-@app.route('/sign_up', methods=['POST'])
-def sign_up():
-    address = request.form['address'].strip()
-    logging.info("start sign up for %s" % address)
-    (error, token) = create_account(address = address, amount = SERVICE1_CREDITS, service_id = SERVICE1_ID)
-    logging.info("end sign up")
-
-    return render_template('index.html', error = error, token = token)
-
-# user signs in with cipher certificate
-@app.route('/login', methods=['POST'])
-def login():
-    cipher_cert = request.form['cert'].strip()
-    logging.info("cipher certificate: %s\n" % cipher_cert)
-
-    cert = decrypt_record(cipher_cert.strip()).strip()
-
-    cmd = exe_cmd_prefix + aleo_program + 'check_cert '
-    input_params = '\"%s\" %uu64' % (cert, SERVICE1_UNIT)
+def check_receipt(receipt, next_approver, state, private_key, fee_index):
+    cmd = exe_cmd_prefix + aleo_program + 'check_receipt '
+    input_params = '\"%s\" %s %uu32 ' % (receipt, next_approver, state)
     cmd += input_params
-    cmd += ''' --private-key ''' + server_private_key
+    cmd += ''' --private-key ''' + private_key
     cmd += query
     cmd += broadcast
     cmd += fee_prefix
-    cmd += server_fee_records[-1] 
+    cmd += fee_record_list[fee_index]
 
     logging.info(get_current_height())
     logging.info(cmd)
-    result = False
+    result_receipt = ""
     error = ""
+
     try:
         output = subprocess.check_output(cmd, shell=True)
         logging.info(output)
@@ -224,39 +204,170 @@ def login():
             if index >= 0:
                 trxid = output[index:].strip()
                 trx = get_transaction(trxid)
-                logging.info(trx)
-
                 fee_record = "Error"
                 if trx != "":
                     fee_record_cipher = trx["fee"]["transition"]["outputs"][0]["value"]
-                    fee_record = decrypt_record(fee_record_cipher)
-                    result = True
+                    view_key = ''
+                    if fee_index == 0:
+                        view_key = approver1_view_key
+                    else:
+                        view_key = approver2_view_key
+                    fee_record = decrypt_record(fee_record_cipher, view_key)
+
+                    result_receipt = trx["execution"]["transitions"][0]["outputs"][0]["value"]
                 else:
                     error = "Failed to query transaction. Please check it on block chain. %s" % trxid
 
                 if fee_record != "Error":
                     fee_record = '\"' + fee_record + '\"'
-                    server_fee_records.append(fee_record)
+                    fee_record_list[fee_index] = fee_record
                     save_config()
                 else:
                     if error == "":
                         error = "Failed to decrypt fee record cipher."
                     logging.error(error)
 
+                logging.info('Result receipt: %s' % result_receipt)
+                return (result_receipt, error)
             else:
                 error = "No transaction found in the successful result."
-                logging.error(error)
         else:
+            logging.error("Failed to excute: \n%s" % cmd)
             error = "Failed to excute transaction. Please try it later."
-            logging.error("Faild to excute: \n%s" % cmd)
 
     except subprocess.CalledProcessError as e:
         error_output = e.output.decode().strip()
-        logging.error("Subprocess Error: %s" % error_output)
         error = "Subprocess Error: %s" % error_output
+        logging.error(error)
 
-    return render_template('index.html', result = result, error = error)
+    return (result_receipt, error) 
 
+@app.route('/approve', methods=['POST'])
+def approve():
+    receipt = request.form.get('receipt')
+    approver = request.form.get('approver')
+    logging.info("@approve receipt = %s, approver = %s" % (receipt, approver))
+    private_key = ''
+    fee_index = 0
+    state = 0
+
+    if approver == '1':
+        private_key = approver1_private_key
+        state = 2
+    else:
+        private_key = approver2_private_key
+        fee_index = 1
+
+    (result, error) = check_receipt(receipt, approver2_address, state, private_key, fee_index)
+    if error == '':
+        receipt = result
+    else:
+        receipt = error
+
+    return jsonify({"receipt" : receipt})
+
+@app.route('/reject', methods=['POST'])
+def reject():
+    receipt = request.form.get('receipt')
+    approver = request.form.get('approver')
+    logging.info("@reject receipt = %s, approver = %s" % (receipt, approver))
+    private_key = ''
+    fee = ''
+    state = 1
+
+    if approver == '1':
+        private_key = approver1_private_key
+        fee = fee_record_list[0]
+    else:
+        private_key = approver2_private_key
+        fee = fee_record_list[1]
+
+    (result, error) = check_receipt(receipt, approver2_address, state, private_key, fee)
+    if error == '':
+        receipt = result
+    else:
+        receipt = error
+
+    return jsonify({"receipt" : receipt})
+
+@app.route('/reimburse', methods=['POST'])
+def reimburse():
+    receipt = request.form.get('receipt')
+
+    cmd = exe_cmd_prefix + aleo_program + 'reimburse '
+    input_params = '\"%s\" %s ' % (receipt, token_list[-1])
+    cmd += input_params
+    cmd += ''' --private-key ''' + approver2_private_key
+    cmd += query
+    cmd += broadcast
+    cmd += fee_prefix
+    cmd += fee_record_list[1]
+
+    logging.info(get_current_height())
+    logging.info(cmd)
+    token = ""
+    error = ""
+
+    try:
+        output = subprocess.check_output(cmd, shell=True)
+        logging.info(output)
+        if output.find("Successfully") >= 0:
+            index = output.rfind("at1")
+            if index >= 0: 
+                trxid = output[index:].strip()
+                trx = get_transaction(trxid)
+                fee_record = "Error"
+                if trx != "":
+                    fee_record_cipher = trx["fee"]["transition"]["outputs"][0]["value"]
+                    fee_record = decrypt_record(fee_record_cipher, approver2_view_key)
+    
+                    remaining_token_cipher = trx["execution"]["transitions"][0]["outputs"][0]["value"]
+                    remaining_token = decrypt_record(remaining_token_cipher, approver2_view_key)
+                    token = trx["execution"]["transitions"][0]["outputs"][1]["value"]
+                else:
+                    error = "Failed to query transaction. Please check it on block chain. %s" % trxid
+
+                if fee_record != "Error" and remaining_token != "Error":
+                    fee_record = '\"' + fee_record + '\"'
+                    fee_record_list[-1] = fee_record
+                    remaining_token = '\"' + remaining_token + '\"'
+                    token_list[-1] = remaining_token
+                    save_config()
+                else:
+                    if error == "":
+                        error = "Failed to decrypt fee or token record cipher."
+                    logging.error(error)
+
+                logging.info('Result cipher token: %s' % token)
+                if error != '':
+                    token = error
+
+                return jsonify({"token": token})
+            else:
+                error = "No transaction found in the successful result."
+        else:
+            logging.error("Failed to excute: \n%s" % cmd)
+            error = "Failed to excute transaction. Please try it later."
+
+    except subprocess.CalledProcessError as e:
+        error_output = e.output.decode().strip()
+        error = "Subprocess Error: %s" % error_output
+        logging.error(error)
+
+    return jsonify({"token" : error})
+
+@app.route('/decrypt_token', methods=['POST'])
+def decrypt_token():
+    global consumer_view_key
+    cipher = request.form.get('token')
+
+    record = decrypt_record(cipher, consumer_view_key)
+
+    if record == "Error":
+        logging.error("Failed to dectypt token.")
+
+    logging.info("Result token: %s" % record);
+    return jsonify({"token": record})
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)

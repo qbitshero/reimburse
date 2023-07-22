@@ -109,7 +109,8 @@ def decrypt_record(cipher):
     except subprocess.CalledProcessError as e:
         error_output = e.output.decode().strip()
         logging.error("Failed to decrypt cipher record.\n%s" % error_output)
-        return error_output
+
+    return "Error"
 
 @app.route("/")
 def home():
