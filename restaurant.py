@@ -6,9 +6,6 @@ import os, requests, json, time, logging
 
 app = Flask(__name__)
 
-SERVICE1_ID = 1
-SERVICE1_UNIT = 10
-
 exe_cmd_prefix = 'snarkos developer execute '
 aleo_program = 'token_receipt.aleo '
 query = ''' --query https://vm.aleo.org/api '''
@@ -19,7 +16,6 @@ consumer_address = ""
 view_key = ""
 private_key = ""
 fee_record_list = []
-
 token_list = []
 
 selected_category = ''
@@ -104,7 +100,7 @@ def decrypt_record(cipher):
     cmd += cipher
     cmd += " --view-key "
     cmd += view_key
-    logging.info("decrypt %s" % cmd)
+    logging.info("decrypt: %s" % cmd)
 
     try:
         record_plain = subprocess.check_output(cmd, shell=True).strip()

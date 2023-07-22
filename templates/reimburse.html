@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Reimburse system</title>
+</head>
+<body>
+	<h1> Reimburse system </h1>
+	<h2> First approver  </h2>
+                <label> Receipt:<br> </label>
+                <textarea type = "text" name = "receipt1" id = "receipt1" style="height:200px; width: 600px;"></textarea>
+                <button onclick="decrypt_receipt1()"> Decrypt </button>
+                <button onclick="approve1()"> Approve </button>
+		<button onclick="reject1()"> Reject  </button>
+
+        <h2> Second approver  </h2>
+                <label> Receipt:<br> </label>
+                <textarea type = "text" name = "receipt2" id = "receipt2" style="height:200px; width: 600px;"></textarea>
+                <button onclick="decrypt_receipt2()"> Decrypt </button>
+                <button onclick="approve2()"> Approve </button>
+                <button onclick="reject2()"> Reject </button>
+
+        <script>
+            function decrypt_receipt1() {
+                var txt = document.getElementById("receipt1").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/decrypt_receipt", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        obj = JSON.parse(xhr.responseText);
+                        document.getElementById("receipt1").value = obj['receipt'] 
+                    }
+                };
+                xhr.send("receipt=" + encodeURIComponent(txt) + "&approver=" + encodeURIComponent("1"));
+            }
+
+            function decrypt_receipt2() {
+                var txt = document.getElementById("receipt2").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/decrypt_receipt", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        obj = JSON.parse(xhr.responseText);
+                        document.getElementById("receipt2").value = obj['receipt'];
+                    }
+                };
+                xhr.send("receipt=" + encodeURIComponent(txt) + "&approver=" + encodeURIComponent("2"));
+            }
+
+            function approve1() {
+                var txt = document.getElementById("receipt1").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/approve", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        obj = JSON.parse(xhr.responseText);
+                        document.getElementById("receipt1").value = obj['receipt'];
+                    }
+                };
+                xhr.send("receipt=" + encodeURIComponent(txt) + "&approver=" + encodeURIComponent("1"));
+            }
+
+            function approve2() {
+                var txt = document.getElementById("receipt2").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/approve", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        obj = JSON.parse(xhr.responseText);
+                        document.getElementById("receipt2").value = obj['receipt'];
+                    }
+                };
+                xhr.send("receipt=" + encodeURIComponent(txt) + "&approver=" + encodeURIComponent("2"));
+            }
+
+            function reject1() {
+                var txt = document.getElementById("receipt1").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/reject", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        document.getElementById("receipt1").value = xhr.responseText;
+                    }
+                };
+                xhr.send("receipt=" + encodeURIComponent(txt) + "&approver=" + encodeURIComponent("1"));
+            }
+
+            function reject2() {
+                var txt = document.getElementById("receipt2").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/reject", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        document.getElementById("receipt2").value = xhr.responseText;
+                    }
+                };
+                xhr.send("receipt=" + encodeURIComponent(txt) + "&approver=" + encodeURIComponent("2"));
+            }
+
+        </script>
+
+</body>
+</html>
