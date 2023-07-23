@@ -20,6 +20,7 @@ token_list = []
 
 selected_category = ''
 selected_department = ''
+is_busy = False
 
 def load_config():
     global consumer_address, view_key, private_key, fee_record_list, token_list
@@ -104,6 +105,9 @@ def decrypt_record(cipher):
 
     try:
         record_plain = subprocess.check_output(cmd, shell=True).strip()
+        start = record_plain.find('{')
+        record_plain = record_plain[start:]
+
         logging.info(record_plain)
         return record_plain
     except subprocess.CalledProcessError as e:
@@ -132,8 +136,13 @@ def select_department():
 
 @app.route('/pay', methods=['POST'])
 def pay():
-    global selected_category, selected_department
+    global selected_category, selected_department, is_busy
     error = ''
+    #if is_busy:
+     #   error = 'Busy now! Please try it later.'
+      #  logging.error(error)
+       # return render_template('restaurant.html', error = error)
+
     date = request.form['date'].strip()
     consumer = request.form['consumer'].strip()
     amount = request.form['amount'].strip()
@@ -154,6 +163,7 @@ def pay():
         logging.error(error)
         return render_template('restaurant.html', error = error)
 
+    #is_busy = True
     cmd = exe_cmd_prefix + aleo_program + 'transfer_private_with_receipt '
     input_params = '%s %s %su64 ' % (token_list[-1], provider, amount)
     receipt_info = '\"{category: %su32, date: %su32, company: %s, dep: %su32, approver: %s}\"' % (selected_category, date, company, selected_department, approver1)
@@ -201,6 +211,7 @@ def pay():
                     logging.error(error)
 
                 logging.info('Receipt: %s' % receipt)
+                #is_busy = False
                 return render_template('restaurant.html', error = error, receipt = receipt)
             else:
                 error = "No transaction found in the successful result."
@@ -213,6 +224,7 @@ def pay():
         error = "Subprocess Error: %s" % error_output
         logging.error(error)
 
+    #is_busy = False
     return render_template('restaurant.html', error = error)
 
 
