@@ -22,14 +22,14 @@ APrivateKey1zkp4q9fRBQrtDNjGi1ywCUa3YzqCydrRzxCYCncPwjZc4ZX
 AViewKey1pCPns4v7kWEfNaPracGkVWHvufT3NGGJS3S9DYCVrdDr
 "{
   owner: aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn.private,
-  microcredits: 49768139u64.private,
-  _nonce: 4086194479244391072114794491945238638866148684025437377708234743283033156770group.public
+  microcredits: 49735016u64.private,
+  _nonce: 413785834010839426456739048294197888554486460695008324805281827745921944062group.public
 }"
 "{
   owner: aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn.private,
   microcredits: 0u64.private,
-  amount: 398530000u64.private,
-  _nonce: 5842088497230798060028241696838603842419182197524034302854083223835467933694group.public
+  amount: 398130000u64.private,
+  _nonce: 7482881147238177569356632069107730087600974785560171076972189082572135429074group.public
 }"
 ```
 **The first record is aleo credits and the second record is token to consume. You need transfer enough aleo credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn for fee. Then replace the credits record in restaurant.conf. Don't delete the double quotations near credits record.**
@@ -48,19 +48,19 @@ APrivateKey1zkp4q9fRBQrtDNjGi1ywCUa3YzqCydrRzxCYCncPwjZc4ZX
 AViewKey1pCPns4v7kWEfNaPracGkVWHvufT3NGGJS3S9DYCVrdDr
 "{
   owner: aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0.private,
-  microcredits: 49707905u64.private,
-  _nonce: 2325123637856960867650649078747018745290545769390773051402876636493931488985group.public
+  microcredits: 49675450u64.private,
+  _nonce: 7270394324193963188288341461606668744909826997448779029980691945688994238034group.public
 }"
 "{
   owner: aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn.private,
-  microcredits: 37142617u64.private,
-  _nonce: 538651491029534747567779499386824792354926915381187124865299496095152891211group.public
+  microcredits: 37077815u64.private,
+  _nonce: 2257256584893796979188333923191854092195137160477457200521999228694562042778group.public
 }"
 "{
   owner: aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn.private,
   microcredits: 0u64.private,
-  amount: 9596850000u64.private,
-  _nonce: 3872039587692290663274780799369325370024468720340212685165007377154236791226group.public
+  amount: 9596450000u64.private,
+  _nonce: 4395933073249491321656226701279427561324044615396641891230576404351188316388group.public
 }"
 ``` 
 
@@ -120,7 +120,7 @@ When step7 succeeds, we get plain receipt. Click 'Reimburse' button. This operat
 When step8 succeeds, we get a cipher token owned by the consumer. Copy the cipher to last textbox, click 'Decrypt' button. Now you can check the token, whether the amount or owner is correct. It is the end.
 ![avatar](res/result.png)
 
-### Debug experience
+## Debug experience
 1. We use ports 8850 and 8851. If you found them already in use, maybe you run it 2 times, and you can shutdown it firstly. If these ports used by other program on the environment, please modify them in restaurant.py and reimburse.py.
 
 2. After each successful transaction, the aleo credits record or token in restaurant.conf or reimburse.conf will be updated. But on failure step, we need check the status on <https://explorer.hamp.app/program?id=token_receipt.aleo>.
@@ -129,6 +129,34 @@ When step8 succeeds, we get a cipher token owned by the consumer. Copy the ciphe
 
     2.2 When the transaction is rejected, the credits record in restaurant.conf or reimburse.conf would not be updated. If the failure happeneds on restaurant server, transfer credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn, and replace the credits record in restaurant.conf. Update the token record(with backup tokens below) in restaurant.conf, too. If the failure happeneds on reimburse server, transfer credits to aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0 and aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn, update the records in reimburse.conf (with backup tokens below). Restart the servers and replay the demo.
 
-### Backup tokens
+## Backup tokens
+1. tokens for restaurant.conf:
+{
+  owner: aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn.private,
+  microcredits: 0u64.private,
+  amount: 20000000000u64.private,
+  _nonce: 1451945170161921914867393454252044596496139481194113390758385167991388674720group.public
+}
 
+{
+  owner: aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn.private,
+  microcredits: 0u64.private,
+  amount: 20000000000u64.private,
+  _nonce: 4774149869944602402620345970077626503174510508599559811789113013027791174887group.public
+}
+
+2. tokens for reimburse.conf:
+{
+  owner: aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn.private,
+  microcredits: 0u64.private,
+  amount: 20000000000u64.private,
+  _nonce: 940922162119398360001608987339362799741542723389343010537335713650057138675group.public
+}
+
+{
+  owner: aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn.private,
+  microcredits: 0u64.private,
+  amount: 20000000000u64.private,
+  _nonce: 2830904409929155781111058775344225398163421353854543471069618566550020580591group.public
+}
 
