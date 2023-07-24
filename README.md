@@ -32,7 +32,7 @@ AViewKey1pCPns4v7kWEfNaPracGkVWHvufT3NGGJS3S9DYCVrdDr
   _nonce: 5842088497230798060028241696838603842419182197524034302854083223835467933694group.public
 }"
 ```
-**The first record is aleo credits and the second record is token consumed. You need transfer aleo enough credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn for fee. Then replace the credits record in restaurant.conf. Don't delete the double quotations near credits record.**
+**The first record is aleo credits and the second record is token to consume. You need transfer enough aleo credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn for fee. Then replace the credits record in restaurant.conf. Don't delete the double quotations near credits record.**
 
 
 And check account info in reimburse.conf.
@@ -64,7 +64,7 @@ AViewKey1pCPns4v7kWEfNaPracGkVWHvufT3NGGJS3S9DYCVrdDr
 }"
 ``` 
 
-**The first and second records are aleo credits, and the third record is token consumed. You need transfer enough aleo credits to aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0 and aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn for fee. Then replace the credits records in reimburse.conf. Don't delete the double quotations near record.**
+**The first and second records are aleo credits, and the third record is token to consume. You need transfer enough aleo credits to aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0 and aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn for fee. Then replace the credits records in reimburse.conf. Don't delete the double quotations near record.**
 
 Now, let's start the demo.
 ```bash
@@ -82,9 +82,10 @@ We give a UI demo, which contains 'Pay', 'Decrypt', 'Approve', 'Reject' and 'Rei
 
 ### Step1. Pay 
 First, let's access restaurant's home site.
-Fill 'Date' with yyyymmdd, 'Consumer' with aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn, select 'Category' with Meal, fill 'Company' with aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn, select 'Department' with Market, fille 'First Approver' with aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0.
+Fill 'Date' with yyyymmdd, 'Consumer' with aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn, select 'Category' with Meal, fill 'Company' with aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn, select 'Department' with Market,
+fill 'First Approver' with aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0.
 This accounts are binded to our demo, please don't use other accounts. Then click 'Pay' button.
-This operation triggers '_transfer_private_with_receipt_' transaction in '_token_receipt' on aleo chain. Refer to the following figure.
+This operation triggers '_transfer_private_with_receipt_' transaction in '_token_receipt_' on aleo chain. Refer to the following figure.
 ![avatar](res/pay.png)
 
 ### Step2. Get receipt
@@ -123,9 +124,10 @@ When step8 succeeds, we get a cipher token owned by the consumer. Copy the ciphe
 1. We use ports 8850 and 8851. If you found them already in use, maybe you run it 2 times, and you can shutdown it firstly. If these ports used by other program on the environment, please modify them in restaurant.py and reimburse.py.
 
 2. After each successful transaction, the aleo credits record or token in restaurant.conf or reimburse.conf will be updated. But on failure step, we need check the status on <https://explorer.hamp.app/program?id=token_receipt.aleo>.
-    2.1 When no rejection found on aleo explorer, the failure caused by network problem, retry the operation later.
 
-    2.2 When the transaction is rejected, the credits record in restaurant.conf or reimburse.conf would not be updated. If the failure happeneds on restaurant server, transfer credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn, and replace the credits record in restaurant.conf. Update the token record(with backup tokens below) in restaurant.conf, too. If the failure happeneds on reimburse server, transfer credits to aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0 and aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn, update the records in reimburse.conf.
+    2.1 When no rejection found on aleo explorer, the failure caused by network problem, retry the failure operation later. If the operation always fails, replay the demo from step1.
+
+    2.2 When the transaction is rejected, the credits record in restaurant.conf or reimburse.conf would not be updated. If the failure happeneds on restaurant server, transfer credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn, and replace the credits record in restaurant.conf. Update the token record(with backup tokens below) in restaurant.conf, too. If the failure happeneds on reimburse server, transfer credits to aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0 and aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn, update the records in reimburse.conf (with backup tokens below). Restart the servers and replay the demo.
 
 ### Backup tokens
 
