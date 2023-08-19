@@ -22,15 +22,16 @@ APrivateKey1zkp4q9fRBQrtDNjGi1ywCUa3YzqCydrRzxCYCncPwjZc4ZX
 AViewKey1pCPns4v7kWEfNaPracGkVWHvufT3NGGJS3S9DYCVrdDr
 "{
   owner: aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn.private,
-  microcredits: 49735016u64.private,
-  _nonce: 413785834010839426456739048294197888554486460695008324805281827745921944062group.public
+  microcredits: 49635647u64.private,
+  _nonce: 4614245085296864174698134820871622796967536386557956943996379074381158499814group.public
 }"
 "{
   owner: aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn.private,
   microcredits: 0u64.private,
-  amount: 398130000u64.private,
-  _nonce: 7482881147238177569356632069107730087600974785560171076972189082572135429074group.public
+  amount: 397300000u64.private,
+  _nonce: 6139380452860835918994130363287337276497480747419126368005853873817917599231group.public
 }"
+
 ```
 **The first record is aleo credits and the second record is token to consume. You need transfer enough aleo credits to aleo1gtf4fjgvc54em4n3t445wml4f0j95x756zqtnujw84nkzny2659snvf9kn for fee. Then replace the credits record in restaurant.conf. Don't delete the double quotations near credits record.**
 
@@ -48,19 +49,19 @@ APrivateKey1zkp4q9fRBQrtDNjGi1ywCUa3YzqCydrRzxCYCncPwjZc4ZX
 AViewKey1pCPns4v7kWEfNaPracGkVWHvufT3NGGJS3S9DYCVrdDr
 "{
   owner: aleo1aw28a8kgvu7nh040pj4jcgpzz6z6vfwzkx9x8y2ajjsdkrtcp5qqjpd4k0.private,
-  microcredits: 49675450u64.private,
-  _nonce: 7270394324193963188288341461606668744909826997448779029980691945688994238034group.public
+  microcredits: 49642995u64.private,
+  _nonce: 6185742998031088765494920734696480837326570418792261860917318411756484012364group.public
 }"
 "{
   owner: aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn.private,
-  microcredits: 37077815u64.private,
-  _nonce: 2257256584893796979188333923191854092195137160477457200521999228694562042778group.public
+  microcredits: 37013013u64.private,
+  _nonce: 6652379042926920062535072893372160052322059666021668136921356731158987938475group.public
 }"
 "{
   owner: aleo1s6axzuxkxz8ksxdzqpnvktglraf7k3mayt05lhx652vc5zw53gqs326sjn.private,
   microcredits: 0u64.private,
-  amount: 9596450000u64.private,
-  _nonce: 4395933073249491321656226701279427561324044615396641891230576404351188316388group.public
+  amount: 9596050000u64.private,
+  _nonce: 7051587296326231638840962366916363274962202971217893229030224228594097164868group.public
 }"
 ``` 
 
