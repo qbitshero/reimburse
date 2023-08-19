@@ -3,10 +3,9 @@
 <head>
 	<title>Restaurant</title>
 </head>
-<body>
+<body style="background-color:rgb(102,204,204)">
 	<h1> Welcome to my restaurant </h1>
 
-        <form method = "POST" action = "{{url_for('pay')}}">
 		<label for = "date"> Date: <br> </label>
                 <input type = "text" name = "date" id = "date" style="left: 200px;">
 		<label for = "consumer"> <br>Consumer:<br> </label>
@@ -39,8 +38,8 @@
 		<label for="approver"><br><br> First approver: <br></label>
                 <input type= "text" name = "approver" id = "approver" style="width: 450px;">
 		<br><br>
-                <button type = "submit" style="width: 160px;"> Pay </button> 
-        </form>
+                <button onclick="pay()" style="width: 160px;"> Pay </button>
+                <label for="receipt" name = "receipt" id = "receipt"> <br> </label>
 
         <script>
             function sendCategorySelection() {
@@ -68,16 +67,43 @@
                 };
                 xhr.send("index=" + selectedIndex);
             }
+
+            function pay() {
+                var datetxt = document.getElementById("date").value;
+                var consumer = document.getElementById("consumer").value;
+                var amount = document.getElementById("amount").value;
+                var company = document.getElementById("company").value;
+                var approver = document.getElementById("approver").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/pay", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        obj = JSON.parse(xhr.responseText);
+                        tip = obj['error'];
+                        var lab = document.getElementById("receipt");
+                        if (tip == '') {
+                            tip = "You can use the following receipt to reimburse now.";
+                            lab.innerHTML = '<br>' + tip + '<br>' + obj['receipt'];
+			} else {
+                            lab.innerHTML = '<br>' + tip;
+                        }
+                    }
+                };
+                xhr.send("date=" + encodeURIComponent(datetxt) + 
+                         "&consumer=" + encodeURIComponent(consumer) +
+                         "&amount=" + encodeURIComponent(amount) +
+                         "&company=" + encodeURIComponent(company) +
+                         "&approver=" + encodeURIComponent(approver));
+                var lab = document.getElementById("receipt");
+                lab.innerHTML = '<br><br>' +  'Waiting...';
+            }
+
         </script>
 
     {% if error %}
 	<h1> {{error}} </h1>
-    {% else %}
-    {% endif %}
-
-    {% if receipt %}
-        <h1> You can use the following receipt to reimburse now. </h1>
-        <p> {{receipt}}</p>
     {% else %}
     {% endif %}
 

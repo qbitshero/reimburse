@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, jsonify, redirect, session, url_for
 import hashlib, subprocess
 import os, requests, json, time, logging
 
@@ -143,11 +143,11 @@ def pay():
       #  logging.error(error)
        # return render_template('restaurant.html', error = error)
 
-    date = request.form['date'].strip()
-    consumer = request.form['consumer'].strip()
-    amount = request.form['amount'].strip()
-    company = request.form['company'].strip()
-    approver1 = request.form['approver'].strip()
+    date = request.form.get('date').strip()
+    consumer = request.form.get('consumer').strip()
+    amount = request.form.get('amount').strip()
+    company = request.form.get('company').strip()
+    approver1 = request.form.get('approver').strip()
     provider = 'aleo18pfln645uyxsg5x7qq6pc4wca8gegkfgk83j9e89vllvlr8cccpq97l6sj'
 
     logging.info('date = %s, consumer = %s' % (date, consumer))
@@ -157,13 +157,14 @@ def pay():
     if selected_category == '':
         error = 'Please select category'
         logging.error(error)
-        return render_template('restaurant.html', error = error)
+        return jsonify({"receipt" : '', "error" : error})
+        #return render_template('restaurant.html', error = error)
     elif selected_department == '':
         error = 'Please select department'
         logging.error(error)
-        return render_template('restaurant.html', error = error)
+        return jsonify({"receipt" : '', "error" : error})
+        #return render_template('restaurant.html', error = error)
 
-    #is_busy = True
     cmd = exe_cmd_prefix + aleo_program + 'transfer_private_with_receipt '
     input_params = '%s %s %su64 ' % (token_list[-1], provider, amount)
     receipt_info = '\"{category: %su32, date: %su32, company: %s, dep: %su32, approver: %s}\"' % (selected_category, date, company, selected_department, approver1)
@@ -211,8 +212,8 @@ def pay():
                     logging.error(error)
 
                 logging.info('Receipt: %s' % receipt)
-                #is_busy = False
-                return render_template('restaurant.html', error = error, receipt = receipt)
+                return jsonify({"receipt" : receipt, "error" : error})
+                #return render_template('restaurant.html', error = error, receipt = receipt)
             else:
                 error = "No transaction found in the successful result."
         else:
@@ -224,8 +225,8 @@ def pay():
         error = "Subprocess Error: %s" % error_output
         logging.error(error)
 
-    #is_busy = False
-    return render_template('restaurant.html', error = error)
+    return jsonify({"receipt" : '', "error" : error})
+    #return render_template('restaurant.html', error = error)
 
 
 if __name__ == "__main__":
